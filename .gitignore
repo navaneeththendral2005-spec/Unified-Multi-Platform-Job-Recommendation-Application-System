@@ -1,0 +1,46 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+venv/
+.venv/
+**/venv/
+**/.venv/
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Testing
+.pytest_cache/
+**/.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Uploaded/generated files
+uploads/
+**/uploads/
+
+# Test/sample files
+fake.docx
+fake.pdf
+
+# Backup archives
+backend-current-safe.zip
+
+# IDE / editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Old/incomplete duplicate project copy
+recommendation-system/
