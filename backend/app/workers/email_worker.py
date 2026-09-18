@@ -59,16 +59,20 @@ def run_forever(
 ) -> None:
     """Continuously process pending email notifications."""
 
+
     logger.info(
         "Email worker started. Batch size=%d, poll interval=%ds.",
         batch_size,
         poll_interval,
     )
 
-    while True:
-        run_once(batch_size=batch_size)
-        time.sleep(poll_interval)
+    try:
+        while True:
+            run_once(batch_size=batch_size)
+            time.sleep(poll_interval)
 
+    except KeyboardInterrupt:
+        logger.info("Email worker stopped gracefully.")
 
 def main() -> None:
     """CLI entry point for the email worker."""
