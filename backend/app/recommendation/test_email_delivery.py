@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from sqlalchemy import create_engine
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import sessionmaker
 
 import app.models  # noqa: F401
@@ -480,3 +481,34 @@ def test_batch_delivery_processes_pending_notifications(
     assert all(item.delivery_status == "sent" for item in results)
     assert all(item.attempts == 1 for item in results)
     assert len(sent) == 2
+
+
+def test_pending_notification_query_uses_postgresql_skip_locked(db):
+    session, user, job = db
+
+    from app.services.email_delivery_service import (
+        DEFAULT_MAX_ATTEMPTS,
+        EMAIL_CHANNEL,
+        PENDING_STATUS,
+    )
+
+    notification_query = (
+        session.query(ApplicationNotification)
+        .filter(
+            ApplicationNotification.channel == EMAIL_CHANNEL,
+            ApplicationNotification.delivery_status == PENDING_STATUS,
+            ApplicationNotification.attempts < DEFAULT_MAX_ATTEMPTS,
+        )
+        .with_for_update(
+            skip_locked=True,
+        )
+    )
+
+    compiled_sql = str(
+        notification_query.statement.compile(
+            dialect=postgresql.dialect(),
+        )
+    )
+
+    assert "FOR UPDATE" in compiled_sql
+    assert "SKIP LOCKED" in compiled_sql

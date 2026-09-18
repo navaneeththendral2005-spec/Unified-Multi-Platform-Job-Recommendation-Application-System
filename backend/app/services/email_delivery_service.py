@@ -1,8 +1,10 @@
 """Email delivery engine for application notifications.
 
 This service owns SMTP delivery, retry scheduling, stale-delivery recovery,
-and delivery-state updates. Application, lifecycle, event, and notification
-creation remain separate from actual email delivery.
+concurrency-safe notification claiming, and delivery-state updates.
+
+Application, lifecycle, event, and notification creation remain separate
+from actual email delivery.
 """
 
 from __future__ import annotations
@@ -184,7 +186,8 @@ def _recover_stale_sending_notifications(
 
     A worker crash or process termination can leave a notification in
     ``sending`` indefinitely. Notifications that have exceeded the configured
-    sending timeout are returned to the pending state so they can be retried.
+    sending timeout are returned to the pending state so they can be claimed
+    again by a worker.
     """
 
     cutoff_time = _utc_now() - timedelta(
@@ -201,16 +204,21 @@ def _recover_stale_sending_notifications(
                 ApplicationNotification.last_attempt_at <= cutoff_time,
             ),
         )
+        .with_for_update(
+            skip_locked=True,
+        )
         .all()
     )
 
     if not stale_notifications:
         return 0
 
+    recovery_time = _utc_now()
+
     for notification in stale_notifications:
         notification.delivery_status = PENDING_STATUS
         notification.next_attempt_at = None
-        notification.updated_at = _utc_now()
+        notification.updated_at = recovery_time
 
     db.commit()
 
@@ -222,10 +230,11 @@ def send_notification(
     *,
     notification_id: int,
 ) -> ApplicationNotification:
-    """Send one eligible email notification with retry handling.
+    """Safely claim and deliver one eligible email notification.
 
-    Delivery-state changes are committed independently from the application
-    and notification creation transaction.
+    The notification is locked before its delivery state changes. The claim
+    is committed before SMTP delivery begins, preventing the database
+    transaction from remaining open during an external network operation.
     """
 
     retry_settings = _get_retry_settings()
@@ -236,11 +245,14 @@ def send_notification(
             ApplicationNotification.id == notification_id,
             ApplicationNotification.channel == EMAIL_CHANNEL,
         )
+        .with_for_update(
+            skip_locked=True,
+        )
         .first()
     )
 
     if not notification:
-        raise LookupError("Notification not found")
+        raise LookupError("Notification not found or currently locked")
 
     if notification.delivery_status == SENT_STATUS:
         return notification
@@ -272,6 +284,8 @@ def send_notification(
     notification.next_attempt_at = None
     notification.updated_at = now
 
+    # Commit the claim before contacting SMTP. This releases the database
+    # lock while the potentially slow external email operation is running.
     db.commit()
     db.refresh(notification)
 
@@ -323,13 +337,17 @@ def get_pending_notifications(
     *,
     limit: int = 10,
 ) -> list[ApplicationNotification]:
-    """Return email notifications currently eligible for delivery.
+    """Claim a batch of eligible notifications using database row locking.
 
     Eligible notifications include:
 
     - newly created pending notifications
     - failed notifications whose retry time has arrived
     - failed notifications without a retry timestamp
+
+    PostgreSQL ``FOR UPDATE SKIP LOCKED`` ensures that multiple workers can
+    safely consume the same notification queue without selecting the same
+    locked notification at the same time.
 
     Stale ``sending`` notifications are first recovered to ``pending`` so a
     worker crash cannot permanently block delivery.
@@ -365,6 +383,9 @@ def get_pending_notifications(
             ApplicationNotification.created_at.asc(),
             ApplicationNotification.id.asc(),
         )
+        .with_for_update(
+            skip_locked=True,
+        )
         .limit(limit)
         .all()
     )
@@ -377,7 +398,7 @@ def deliver_pending_notifications(
     *,
     limit: int = 10,
 ) -> list[ApplicationNotification]:
-    """Attempt delivery of a batch of eligible email notifications."""
+    """Deliver a batch of concurrency-safe claimed notifications."""
 
     notifications = get_pending_notifications(
         db,
