@@ -1,4 +1,9 @@
-"""Background worker for application email notifications."""
+"""Background worker for application email notifications.
+
+The worker is responsible for continuously invoking the email delivery
+engine. Retry scheduling, stale-delivery recovery, and SMTP delivery remain
+inside the delivery service.
+"""
 
 from __future__ import annotations
 
@@ -21,7 +26,10 @@ def run_once(
     *,
     batch_size: int = DEFAULT_BATCH_SIZE,
 ) -> int:
-    """Process one batch of pending email notifications.
+    """Process one batch of eligible email notifications.
+
+    The delivery service determines which notifications are currently
+    eligible, including newly pending notifications and scheduled retries.
 
     Returns the number of notifications processed.
     """
@@ -34,18 +42,24 @@ def run_once(
             limit=batch_size,
         )
 
-        if notifications:
+        processed_count = len(notifications)
+
+        if processed_count:
             logger.info(
                 "Processed %d email notification(s).",
-                len(notifications),
+                processed_count,
             )
         else:
-            logger.debug("No pending email notifications found.")
+            logger.debug(
+                "No eligible email notifications found."
+            )
 
-        return len(notifications)
+        return processed_count
 
     except Exception:
-        logger.exception("Email worker batch failed.")
+        logger.exception(
+            "Email worker batch failed."
+        )
         return 0
 
     finally:
@@ -57,22 +71,29 @@ def run_forever(
     batch_size: int = DEFAULT_BATCH_SIZE,
     poll_interval: int = DEFAULT_POLL_INTERVAL,
 ) -> None:
-    """Continuously process pending email notifications."""
-
+    """Continuously process eligible email notifications."""
 
     logger.info(
-        "Email worker started. Batch size=%d, poll interval=%ds.",
+        "Email worker started | batch_size=%d | poll_interval=%ds",
         batch_size,
         poll_interval,
     )
 
     try:
         while True:
-            run_once(batch_size=batch_size)
-            time.sleep(poll_interval)
+            run_once(
+                batch_size=batch_size,
+            )
+
+            time.sleep(
+                poll_interval,
+            )
 
     except KeyboardInterrupt:
-        logger.info("Email worker stopped gracefully.")
+        logger.info(
+            "Email worker stopped gracefully."
+        )
+
 
 def main() -> None:
     """CLI entry point for the email worker."""
@@ -91,31 +112,48 @@ def main() -> None:
         "--batch-size",
         type=int,
         default=DEFAULT_BATCH_SIZE,
-        help=f"Maximum notifications per batch (default: {DEFAULT_BATCH_SIZE}).",
+        help=(
+            "Maximum notifications processed per batch "
+            f"(default: {DEFAULT_BATCH_SIZE})."
+        ),
     )
 
     parser.add_argument(
         "--interval",
         type=int,
         default=DEFAULT_POLL_INTERVAL,
-        help=f"Polling interval in seconds (default: {DEFAULT_POLL_INTERVAL}).",
+        help=(
+            "Polling interval in seconds "
+            f"(default: {DEFAULT_POLL_INTERVAL})."
+        ),
     )
 
     args = parser.parse_args()
 
     if args.batch_size < 1:
-        parser.error("--batch-size must be at least 1")
+        parser.error(
+            "--batch-size must be at least 1"
+        )
 
     if args.interval < 1:
-        parser.error("--interval must be at least 1 second")
+        parser.error(
+            "--interval must be at least 1 second"
+        )
 
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        format=(
+            "%(asctime)s | "
+            "%(levelname)s | "
+            "%(name)s | "
+            "%(message)s"
+        ),
     )
 
     if args.once:
-        run_once(batch_size=args.batch_size)
+        run_once(
+            batch_size=args.batch_size,
+        )
         return
 
     run_forever(
