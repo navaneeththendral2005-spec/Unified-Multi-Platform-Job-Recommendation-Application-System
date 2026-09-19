@@ -16,12 +16,25 @@ class ApplicationStatusUpdate(BaseModel):
     notes: str | None = None
 
 
+class JobSummaryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    company: str
+    location: str | None
+    job_type: str | None
+    experience_required: str | None
+    application_link: str | None
+
+
 class ApplicationResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     user_id: int
     job_id: int
+    job: JobSummaryResponse
     status: str
     source_platform: str | None
     external_application_id: str | None
@@ -52,6 +65,7 @@ class ApplicationLifecycleStatus(BaseModel):
     terminal: bool
     allowed_next_statuses: list[str]
 
+
 class ApplicationEventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -67,3 +81,31 @@ class ApplicationEventResponse(BaseModel):
         default=None,
         validation_alias="event_metadata",
     )
+
+
+class ApplicationListResponse(BaseModel):
+    items: list[ApplicationResponse]
+    page: int
+    page_size: int
+    total: int
+    total_pages: int
+    has_next: bool
+    has_previous: bool
+
+
+class ApplicationStatusCount(BaseModel):
+    status: str
+    count: int
+
+
+class ApplicationSummaryResponse(BaseModel):
+    total: int
+    by_status: list[ApplicationStatusCount]
+    active: int
+    terminal: int
+
+
+class ApplicationTimelineResponse(BaseModel):
+    application: ApplicationResponse
+    history: list[ApplicationStatusHistoryResponse]
+    events: list[ApplicationEventResponse]
