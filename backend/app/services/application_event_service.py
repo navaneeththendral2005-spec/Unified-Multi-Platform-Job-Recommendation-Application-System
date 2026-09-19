@@ -14,6 +14,17 @@ APPLICATION_CREATED = "application_created"
 STATUS_CHANGED = "status_changed"
 
 
+def _normalize_source(source: str | None) -> str | None:
+    if source is None:
+        return None
+    normalized = source.strip()
+    if not normalized:
+        return None
+    if len(normalized) > 100:
+        raise ValueError("Event source must be 100 characters or fewer")
+    return normalized
+
+
 def record_application_event(
     db: Session,
     *,
@@ -39,7 +50,7 @@ def record_application_event(
         event_type=event_type,
         old_status=old_status,
         new_status=new_status,
-        source=source,
+        source=_normalize_source(source),
         occurred_at=occurred_at or datetime.utcnow(),
         event_metadata=metadata,
     )

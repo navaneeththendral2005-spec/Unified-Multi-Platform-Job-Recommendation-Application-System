@@ -332,3 +332,108 @@ def test_invalid_status_change_creates_no_event(db):
 
     assert len(events) == 1
     assert events[0].event_type == "application_created"
+
+
+def test_paginated_application_lookup_supports_status_and_pagination(db):
+    session, user, job = db
+
+    second_job = Job(
+        title="Data Engineer",
+        company="Another Company",
+        description="Build data services.",
+    )
+    session.add(second_job)
+    session.commit()
+
+    first = create_application(
+        session,
+        user.id,
+        ApplicationCreate(job_id=job.id, source_platform="LinkedIn"),
+    )
+    second = create_application(
+        session,
+        user.id,
+        ApplicationCreate(job_id=second_job.id, source_platform="Naukri"),
+    )
+    update_application_status(
+        session,
+        user.id,
+        second.id,
+        ApplicationStatusUpdate(status="screening"),
+    )
+
+    from app.services.application_service import get_user_applications_paginated
+
+    items, total = get_user_applications_paginated(
+        session,
+        user.id,
+        status_filter="SCREENING",
+        page=1,
+        page_size=1,
+    )
+
+    assert total == 1
+    assert len(items) == 1
+    assert items[0].id == second.id
+    assert first.id != second.id
+
+
+def test_application_summary_returns_all_canonical_statuses(db):
+    session, user, job = db
+
+    application = create_application(
+        session,
+        user.id,
+        ApplicationCreate(job_id=job.id, source_platform="LinkedIn"),
+    )
+    update_application_status(
+        session,
+        user.id,
+        application.id,
+        ApplicationStatusUpdate(status="screening"),
+    )
+
+    from app.services.application_service import get_application_summary
+
+    summary = get_application_summary(session, user.id)
+
+    assert summary["total"] == 1
+    assert summary["active"] == 1
+    assert summary["terminal"] == 0
+    assert len(summary["by_status"]) == len(APPLICATION_STATUSES)
+    assert {item["status"] for item in summary["by_status"]} == set(APPLICATION_STATUSES)
+    assert next(item["count"] for item in summary["by_status"] if item["status"] == "screening") == 1
+
+
+def test_application_summary_respects_source_and_company_filters(db):
+    session, user, job = db
+
+    second_job = Job(
+        title="Data Engineer",
+        company="Another Company",
+        description="Build data services.",
+    )
+    session.add(second_job)
+    session.commit()
+
+    create_application(
+        session,
+        user.id,
+        ApplicationCreate(job_id=job.id, source_platform="LinkedIn"),
+    )
+    create_application(
+        session,
+        user.id,
+        ApplicationCreate(job_id=second_job.id, source_platform="Naukri"),
+    )
+
+    from app.services.application_service import get_application_summary
+
+    summary = get_application_summary(
+        session,
+        user.id,
+        source_platform="linkedin",
+        company="test company",
+    )
+
+    assert summary["total"] == 1
