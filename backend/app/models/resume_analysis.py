@@ -1,3 +1,4 @@
+from app.utils.time import utc_now
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Integer, Text
@@ -98,7 +99,7 @@ class ResumeAnalysis(Base):
 
     analyzed_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=utc_now
     )
 
         # ========================================================

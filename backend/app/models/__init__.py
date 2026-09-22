@@ -16,3 +16,6 @@ from app.models.application import Application
 from app.models.application_status_history import ApplicationStatusHistory
 
 from app.models.application_event import ApplicationEvent
+
+from app.models.oauth_connection import OAuthConnection
+from app.models.oauth_state import OAuthState
