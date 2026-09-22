@@ -1,487 +1,245 @@
-# Unified Multi-Platform Job Recommendation & Application System
+# 🚀 Unified Multi-Platform Job Recommendation Application System
 
-An intelligent career platform designed to bring job and internship
-discovery, personalized recommendations, applications, application
-tracking, and notifications into a single system.
+> **One platform for discovering, understanding, applying to, and tracking job & internship opportunities.**
 
-The long-term vision is to reduce the need for users to search and apply
-across multiple job-search platforms individually. The system is
-designed to understand a user's profile and resume, identify relevant
-skills and projects, discover suitable opportunities, prioritize
-preferred locations, provide company and job insights, and centralize
-the application lifecycle.
+Finding the right opportunity often means searching across multiple platforms, comparing listings, understanding requirements, applying separately, and then keeping track of every application.
 
-> **Project Status:** Active Development\
-> **Current Milestone:** Resume Analysis & Personalized Job
-> Recommendation Foundation
+This project aims to bring that entire journey into **one intelligent system**.
 
-------------------------------------------------------------------------
+Instead of making users search through platforms individually, the system brings opportunities from multiple authorized sources into a unified experience — while using AI to understand the candidate and identify opportunities that fit their profile.
 
-## 🎯 Project Vision
+---
 
-The system is being developed as a centralized intelligent layer between
-a candidate and the job market.
+## 💡 The Idea
 
-Instead of manually:
+The system starts with **the candidate**, not the job listing.
 
--   Searching multiple job platforms
--   Comparing opportunities across different websites
--   Applying separately to different jobs
--   Tracking applications across different platforms
--   Checking different sources for application updates
+A user uploads their resume, and the system analyzes their:
 
-the long-term goal is to provide these capabilities through a single
-application.
+- Skills
+- Projects
+- Experience
+- Education
+- Career profile
 
-### Intended workflow
+The system then uses this understanding to discover and recommend relevant opportunities across connected job platforms.
 
-``` text
-                         USER
-                           │
-                           ▼
-                    Create Profile
-                           │
-                           ▼
-                     Upload Resume
-                           │
-                           ▼
-                  AI Resume Analysis
-                           │
-              ┌────────────┼────────────┐
-              │            │            │
-           Skills       Projects     Experience
-              │            │            │
-              └────────────┼────────────┘
-                           │
-                           ▼
-                  User Preferences
-                 (Locations / Interests)
-                           │
-                           ▼
-                 Job Market Intelligence
-                           │
-          ┌────────────────┼────────────────┐
-          ▼                ▼                ▼
-       LinkedIn          Naukri        Internshala
-          │                │                │
-          └────────────────┼────────────────┘
-                           │
-                           ▼
-               Personalized Recommendations
-                           │
-                           ▼
-                Job & Company Information
-                           │
-                           ▼
-                     Apply to Jobs
-                           │
-                           ▼
-                 Application Tracking
-                           │
-                           ▼
-                  Email Notifications
+Users can explore the opportunity, understand the company and job requirements, see **where the listing came from**, and proceed with the application.
+
+From there, the system continues working by keeping track of the application and notifying the user about important status changes.
+
+### In simple terms
+
+```text
+Your Profile
+     ↓
+AI understands you
+     ↓
+Discover opportunities
+     ↓
+Find relevant matches
+     ↓
+Understand the job & company
+     ↓
+Apply
+     ↓
+Track applications
+     ↓
+Stay informed
 ```
 
-The multi-platform components shown above represent the **long-term
-project vision**. Integration with individual external platforms will be
-developed in later phases.
+---
 
-------------------------------------------------------------------------
+## 🌐 One Place. Multiple Job Platforms.
 
-## 🚀 Core Objectives
+The platform is designed to bring opportunities from multiple sources into a single experience.
 
-### 1. Multi-Platform Job Discovery
+Currently designed for integrations with:
 
-The long-term system is intended to search job and internship
-opportunities across multiple platforms, including:
+- LinkedIn
+- Naukri
+- Internshala
+- Indeed
+- Wellfound
 
--   LinkedIn
--   Naukri
--   Internshala
--   Other relevant job-search platforms
+Each opportunity retains its **original source and application path**, allowing users to understand where it came from rather than hiding the underlying platform.
 
-Each opportunity should retain its source information so users can
-understand where a posting originated.
+> Platform capabilities depend on official API, partner, authorization, and integration availability.
 
-### 2. AI-Powered Resume Analysis
+---
 
-The system starts by understanding the candidate.
+## 🧠 AI-Powered Job Discovery
 
-When a resume is uploaded, the analysis component is designed to
-identify information such as:
+The system doesn't simply collect job listings.
 
--   Skills
--   Projects
--   Experience
--   Education
--   Other relevant candidate information
+It first understands the candidate and then uses that information to identify relevant opportunities.
 
-This information forms a structured representation of the candidate for
-recommendation and matching.
+Users can also specify preferences such as **preferred locations**, allowing the recommendation system to prioritize opportunities according to their career preferences.
 
-### 3. Personalized Job Recommendations
+---
 
-The recommendation system is designed to identify opportunities that
-align with the candidate's profile.
+## 🔎 Explore Before You Apply
 
-Relevant factors include:
+Every recommended opportunity is intended to give the user the information needed to make their own decision.
 
--   Resume information
--   Skills
--   Projects
--   Job requirements
--   User interests
--   Preferred locations
--   Other profile information
+Users can explore:
 
-### 4. Location-Aware Recommendations
+- Job description
+- Required skills
+- Experience requirements
+- Location
+- Company information
+- Application source
+- Application link
 
-Users can specify preferred locations and relocation preferences.
+The goal is to make the decision process **clear and informed**, rather than simply pushing users toward applications.
 
-The recommendation process is intended to prioritize opportunities that
-align with those preferences.
+---
 
-### 5. Company & Job Intelligence
+## 📝 Apply & Track
 
-The platform is intended to provide a more complete view of each
-opportunity, including:
+Once a user decides to apply, the system supports the appropriate application flow available for that opportunity.
 
--   Company information
--   Job description
--   Job requirements
--   Job source/platform
--   Other available opportunity details
+Applications are then brought into a centralized tracking system so users don't have to remember where they applied or manually maintain separate records.
 
-This gives users more context before applying.
-
-### 6. Centralized Applications
-
-A major long-term objective is to allow users to manage applications
-from a single platform rather than repeatedly visiting different
-job-search websites.
-
-The planned workflow supports both individual applications and
-user-authorized application workflows for multiple suitable
-opportunities.
-
-### 7. Application Tracking
-
-The system is designed to maintain a centralized record of job and
-internship applications and their status.
-
-A planned application lifecycle includes stages such as:
-
-``` text
-Applied
-   │
-   ▼
-Submitted
-   │
-   ▼
-Under Review
-   │
-   ├──────────────► Shortlisted
-   │                    │
-   │                    ▼
-   │                Interview
-   │                    │
-   │                    ▼
-   │                  Offer
-   │
-   └──────────────► Rejected
+```text
+Discover → Review → Apply → Track
 ```
 
-### 8. Application Notifications
+---
 
-The long-term system is intended to send email notifications when
-application statuses change, giving users a centralized notification
-experience.
+## 🔔 Stay Updated
 
-------------------------------------------------------------------------
+Application progress can generate notifications so users stay informed about changes without repeatedly checking different platforms.
 
-## 🧠 Current System Architecture
+---
 
-The current backend is organized into modular API, database, model,
-schema, recommendation, and service layers.
+## 🏗️ System Architecture
 
-``` text
-backend/
-│
-├── app/
-│   ├── api/
-│   │   ├── auth.py
-│   │   ├── job.py
-│   │   ├── notification.py
-│   │   ├── profile.py
-│   │   ├── recommendation.py
-│   │   ├── resume.py
-│   │   └── user_preference.py
-│   │
-│   ├── database/
-│   │   ├── base.py
-│   │   └── connection.py
-│   │
-│   ├── models/
-│   │
-│   ├── recommendation/
-│   │
-│   ├── schemas/
-│   │
-│   └── services/
-│       ├── auth_service.py
-│       ├── candidate_intelligence_service.py
-│       ├── job_intelligence_service.py
-│       ├── job_service.py
-│       ├── recommendation_service.py
-│       ├── resume_analysis_service.py
-│       ├── resume_service.py
-│       ├── skill_extraction_service.py
-│       ├── skill_normalization_service.py
-│       ├── skill_service.py
-│       ├── user_skill_service.py
-│       ├── application_service.py
-│       ├── application_lifecycle.py
-│       └── application_notification_service.py
-│
-└── main.py
+```text
+                  Candidate
+                      │
+                      ▼
+               Resume Intelligence
+                      │
+                      ▼
+              Candidate Profile
+                      │
+                      ▼
+             User Preferences
+                      │
+                      ▼
+          Multi-Platform Discovery
+                      │
+                      ▼
+          Job Intelligence & Matching
+                      │
+                      ▼
+             User Decision
+                      │
+                      ▼
+             Application Flow
+                      │
+                      ▼
+            Application Tracking
+                      │
+                      ▼
+               Notifications
 ```
 
-The modular structure is intended to make it easier to extend the system
-as additional recommendation, application, notification, and
-external-platform capabilities are developed.
+---
 
-------------------------------------------------------------------------
+## 🔐 Integration Approach
 
-## ✅ Current Implementation
+The system is built around **authorized and transparent integrations**.
 
-The current milestone includes the foundation for:
+It is designed to use official APIs, OAuth, partner integrations, feeds, ATS integrations, and legitimate external application flows where available.
 
--   User authentication
--   Candidate profile management
--   Resume upload
--   Resume analysis
--   Skill extraction
--   Skill normalization
--   Job intelligence
--   Personalized job recommendations
--   Application data and lifecycle foundation
--   Application-related services
--   Notification-related backend foundation
--   PostgreSQL database integration
--   SQLAlchemy-based database layer
--   Alembic database migrations
--   REST API endpoints through FastAPI
+It does **not** depend on:
 
-The project is being developed incrementally, with the current
-implementation forming the foundation for the larger multi-platform
-platform described in the project vision.
+- Unauthorized scraping
+- Fake applications
+- CAPTCHA bypassing
+- Credential sharing
+- Private undocumented APIs
 
-------------------------------------------------------------------------
+When a platform does not provide the required capability, the system is designed to make that limitation clear rather than pretending the action succeeded.
 
-## 🛠️ Technology Stack
+---
+
+## ⚙️ Technology
+
+- **Backend:** FastAPI
+- **Database:** PostgreSQL
+- **ORM:** SQLAlchemy
+- **Authentication:** JWT + OAuth 2.0
+- **AI:** Resume Intelligence & Recommendation Engine
+- **Background Processing:** Async Workers
+- **API:** REST + OpenAPI
+
+---
+
+## 📌 Current Status
+
+### Built
+
+- Resume Intelligence
+- Personalized Recommendation Engine
+- Multi-Platform Integration Architecture
+- Provider Authentication Framework
+- Job Normalization & Deduplication
+- Job Synchronization
+- Provider Capability Management
+- Retry & Failure Handling
+- Background Sync Worker
+- Application Tracking
+- Application Lifecycle Management
+- Email & Notification Engine
+- Provider Health & Readiness
+- API Documentation
+- Automated Test Suite
+
+### Platform Activation
+
+The integration architecture is ready for provider-specific activation.
+
+Actual job discovery and application capabilities depend on obtaining the required official API, partner, or authorization access from each platform.
+
+---
+
+## 🚀 Getting Started
 
 ### Backend
 
--   Python
--   FastAPI
--   SQLAlchemy
--   PostgreSQL
--   Alembic
--   REST APIs
-
-### Intelligence & Recommendation
-
--   Resume analysis
--   Skill extraction
--   Skill normalization
--   Candidate intelligence
--   Job intelligence
--   Personalized recommendation logic
-
-### Development & Version Control
-
--   Git
--   GitHub
--   Python virtual environment
-
-------------------------------------------------------------------------
-
-## 🗺️ Development Roadmap
-
-### Phase 1 --- Candidate Intelligence
-
--   [x] User authentication
--   [x] Candidate profile
--   [x] Resume upload
--   [x] Resume analysis
--   [x] Skill extraction
--   [x] Skill normalization
-
-### Phase 2 --- Recommendation Intelligence
-
--   [x] Job intelligence foundation
--   [x] Candidate-job matching foundation
--   [x] Personalized recommendations
--   [ ] Advanced recommendation ranking
--   [ ] Improved preference-based ranking
-
-### Phase 3 --- Application Management
-
--   [x] Application data model
--   [x] Application lifecycle foundation
--   [ ] Complete application status management
--   [ ] Application dashboard
--   [ ] Application history
-
-### Phase 4 --- Notifications
-
--   [ ] Email service
--   [ ] Application status emails
--   [ ] Automated notification workflows
-
-### Phase 5 --- Multi-Platform Integration
-
--   [ ] LinkedIn integration
--   [ ] Naukri integration
--   [ ] Internshala integration
--   [ ] Additional job platforms
--   [ ] Job-source tracking
--   [ ] Cross-platform opportunity aggregation
-
-### Phase 6 --- Intelligent Application Workflow
-
--   [ ] Centralized application workflow
--   [ ] User-authorized multi-job application
--   [ ] Application automation
--   [ ] Cross-platform application tracking
-
-------------------------------------------------------------------------
-
-## 🔐 Security & Privacy
-
-Sensitive configuration should never be committed to the repository.
-
-Examples include:
-
-``` text
-.env
-Database credentials
-API keys
-Authentication secrets
-Email credentials
+```bash
+cd backend
+uvicorn app.main:app --reload
 ```
 
-The repository uses `.gitignore` rules to exclude sensitive
-configuration, virtual environments, generated files, uploaded files,
-caches, and local backup archives.
+Once running, the API documentation is available through the FastAPI OpenAPI interface.
 
-------------------------------------------------------------------------
+---
 
-## 📁 Repository Structure
+## 🗺️ What's Next
 
-``` text
-intelligent-job-recommendation-system/
-│
-├── backend/
-│   ├── app/
-│   ├── alembic/
-│   ├── requirements.txt
-│   └── ...
-│
-├── frontend/
-│
-├── docs/
-│
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
+The project is moving toward a complete unified career experience, including:
 
-------------------------------------------------------------------------
+- Activation of approved platform integrations
+- Unified job discovery experience
+- Recommendation dashboard
+- Application dashboard
+- Provider connection management
+- User preference management
+- Notification center
 
-## 🔄 Development Approach
+---
 
-The project is being built incrementally.
+## 🎯 Vision
 
-Each major capability is developed and verified before moving toward the
-next stage:
+This project is being built around a simple idea:
 
-``` text
-Candidate Profile
-       ↓
-Resume Intelligence
-       ↓
-Skill Intelligence
-       ↓
-Job Intelligence
-       ↓
-Recommendation Engine
-       ↓
-Application Management
-       ↓
-Notifications
-       ↓
-Multi-Platform Integration
-       ↓
-Intelligent Application Workflow
-```
+> **Understand the candidate. Understand the opportunities. Bring them together. Help the user make an informed decision. Then manage everything that happens afterward.**
 
-This approach allows the core recommendation and application
-infrastructure to be established before introducing external-platform
-integrations and larger automation workflows.
+The goal is not to create another job board.
 
-------------------------------------------------------------------------
-
-## 🔮 Long-Term Vision
-
-The long-term objective is to evolve the system from a job
-recommendation engine into a broader intelligent career platform.
-
-The intended experience is:
-
-``` text
-Understand the Candidate
-          ↓
-Understand the Job Market
-          ↓
-Find Relevant Opportunities
-          ↓
-Explain the Opportunities
-          ↓
-Let the User Choose
-          ↓
-Apply to Opportunities
-          ↓
-Track Applications
-          ↓
-Notify Status Changes
-```
-
-The ultimate goal is to provide a single platform through which users
-can discover relevant jobs and internships, understand the opportunities
-and companies behind them, manage applications, and keep track of
-application progress across a fragmented job-search ecosystem.
-
-------------------------------------------------------------------------
-
-## 📌 Project Status
-
-**Status:** Active Development
-
-**Current Milestone:** Resume Analysis & Personalized Job Recommendation
-Foundation
-
-**Long-Term Direction:** Unified Multi-Platform Job Discovery,
-Recommendation, Application Management, Tracking, and Notification
-Platform
-
-------------------------------------------------------------------------
-
-## 👨‍💻 Project
-
-**Unified Multi-Platform Job Recommendation & Application System**
-
-An ongoing AI and software engineering project focused on resume
-intelligence, candidate-job matching, personalized recommendations,
-application management, and the future integration of multiple
-job-search platforms.
+The goal is to build a **unified intelligent career layer** that connects the candidate, the job market, the application process, and everything that follows — in one place.
