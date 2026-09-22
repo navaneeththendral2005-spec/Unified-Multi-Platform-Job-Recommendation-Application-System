@@ -1,11 +1,28 @@
+# Environment / secrets
 .env
 .env.*
+!.env.example
+
+# Virtual environments
 venv/
 .venv/
+
+# Python cache / bytecode
 __pycache__/
 *.py[cod]
+
+# Testing
 .pytest_cache/
+
+# Runtime uploads
 uploads/
+
+# Logs
 *.log
+
+# Local archives
+*.zip
+
+# Test fixtures
 fake.docx
 fake.pdf

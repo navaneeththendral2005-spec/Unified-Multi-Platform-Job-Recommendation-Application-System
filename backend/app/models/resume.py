@@ -1,3 +1,4 @@
+from app.utils.time import utc_now
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
@@ -49,7 +50,7 @@ class Resume(Base):
 
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=utc_now
     )
 
     # ========================================================

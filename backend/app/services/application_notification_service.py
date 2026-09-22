@@ -16,6 +16,7 @@ from app.models.application_event import ApplicationEvent
 from app.models.application_notification import ApplicationNotification
 from app.models.job import Job
 from app.models.user import User
+from app.utils.time import utc_now
 
 
 EMAIL_CHANNEL = "email"
@@ -148,7 +149,7 @@ def mark_notification_read(
         return None
 
     if notification.read_at is None:
-        notification.read_at = datetime.utcnow()
+        notification.read_at = utc_now()
         db.commit()
         db.refresh(notification)
 

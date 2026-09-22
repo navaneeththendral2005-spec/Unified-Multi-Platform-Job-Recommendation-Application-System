@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from sqlalchemy import text
 
@@ -25,19 +27,34 @@ from app.api.resume import router as resume_router
 from app.api.user_preference import router as user_preference_router
 from app.api.application import router as application_router
 from app.api.notification import router as notification_router
+from app.api.job_sources import router as job_sources_router
+from app.api.system import router as system_router
 
+from app.integrations.auth import register_auth_providers
 
 app = FastAPI(
     title="AI Job Recommendation System",
     description="AI-powered Job and Internship Recommendation Platform",
     version="1.0.0",
 )
+
+register_auth_providers() 
+
+def _cors_origins() -> list[str]:
+    raw_origins = os.getenv(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    )
+    return [
+        origin.strip()
+        for origin in raw_origins.split(",")
+        if origin.strip()
+    ]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,7 +68,8 @@ app.include_router(resume_router)
 app.include_router(user_preference_router)
 app.include_router(application_router)
 app.include_router(notification_router)
-
+app.include_router(job_sources_router)
+app.include_router(system_router)
 
 @app.get("/")
 def root():
@@ -69,16 +87,19 @@ def health_check():
 
 @app.get("/database-test")
 def database_test():
-    try:
-        with engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
+    from app.services.system_readiness_service import (
+        system_readiness_service,
+    )
 
+    result = system_readiness_service.check_database()
+
+    if result.status == "READY":
         return {
-            "database": "connected successfully ✅"
+            "database": "connected successfully",
+            "status": result.status,
         }
 
-    except Exception as error:
-        return {
-            "database": "connection failed ❌",
-            "error": str(error),
-        }
+    return {
+        "database": "connection check failed",
+        "status": result.status,
+    }

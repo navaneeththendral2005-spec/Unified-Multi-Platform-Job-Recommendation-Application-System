@@ -1,3 +1,4 @@
+from app.utils.time import utc_now
 """Durable notification delivery records."""
 
 from datetime import datetime
@@ -112,14 +113,14 @@ class ApplicationNotification(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
+        default=utc_now,
         nullable=False,
         index=True,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
+        default=utc_now,
         onupdate=datetime.utcnow,
         nullable=False,
     )

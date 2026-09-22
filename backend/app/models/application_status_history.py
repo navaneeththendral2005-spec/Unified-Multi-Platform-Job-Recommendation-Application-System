@@ -1,3 +1,4 @@
+from app.utils.time import utc_now
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
@@ -37,7 +38,7 @@ class ApplicationStatusHistory(Base):
 
     changed_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
+        default=utc_now,
         nullable=False,
         index=True
     )

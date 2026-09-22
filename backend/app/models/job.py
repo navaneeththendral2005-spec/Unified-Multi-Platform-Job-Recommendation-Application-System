@@ -1,7 +1,9 @@
+from app.utils.time import utc_now
 from datetime import datetime
 
 from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
 
 from app.database.base import Base
 
@@ -25,6 +27,12 @@ class Job(Base):
         String(255),
         nullable=False,
         index=True
+    )
+
+    company_id: Mapped[int | None] = mapped_column(
+    ForeignKey("companies.id", ondelete="SET NULL"),
+    nullable=True,
+    index=True
     )
 
     description: Mapped[str] = mapped_column(
@@ -59,12 +67,12 @@ class Job(Base):
 
     posted_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=utc_now
     )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=utc_now
     )
 
     job_skills = relationship(
@@ -77,4 +85,15 @@ class Job(Base):
         "Application",
         back_populates="job",
         cascade="all, delete-orphan"
+    )
+
+    source_listings = relationship(
+    "JobSourceListing",
+    back_populates="job",
+    cascade="all, delete-orphan"
+    )
+
+    company_entity = relationship(
+    "Company",
+    back_populates="jobs"
     )

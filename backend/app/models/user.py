@@ -1,3 +1,4 @@
+from app.utils.time import utc_now
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Integer, String
@@ -39,12 +40,12 @@ class User(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow
+        default=utc_now
     )
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
-        default=datetime.utcnow,
+        default=utc_now,
         onupdate=datetime.utcnow
     )
 
@@ -68,4 +69,10 @@ class User(Base):
         "Application",
         back_populates="user",
         cascade="all, delete-orphan"
+    )
+
+    oauth_connections = relationship(
+        "OAuthConnection",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )

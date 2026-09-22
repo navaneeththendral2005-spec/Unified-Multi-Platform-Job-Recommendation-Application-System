@@ -83,6 +83,9 @@ from app.models.job_skill import JobSkill
 from app.models.application import Application
 from app.models.application_status_history import ApplicationStatusHistory
 from app.models.application_event import ApplicationEvent
+from app.models.company import Company
+from app.models.job_source import JobSource
+from app.models.job_source_listing import JobSourceListing
 
 # ============================================================
 # TARGET METADATA
