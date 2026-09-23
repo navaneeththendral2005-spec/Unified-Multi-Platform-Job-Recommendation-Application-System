@@ -8,6 +8,7 @@ from sqlalchemy.orm import Query, Session
 from app.models.application import Application
 from app.models.application_status_history import ApplicationStatusHistory
 from app.models.job import Job
+from app.utils.time import utc_now
 from app.schemas.application import ApplicationCreate, ApplicationStatusUpdate
 from app.services.application_lifecycle import (
     APPLICATION_STATUSES,
@@ -54,7 +55,7 @@ def create_application(
     if existing:
         raise ValueError("You have already applied to this job")
 
-    now = datetime.utcnow()
+    now = utc_now()
     source = _normalize_source(application.source_platform)
 
     new_application = Application(
@@ -292,7 +293,7 @@ def update_application_status(
         db.refresh(application)
         return application
 
-    now = datetime.utcnow()
+    now = utc_now()
 
     application.status = new_status
     application.last_status_changed_at = now

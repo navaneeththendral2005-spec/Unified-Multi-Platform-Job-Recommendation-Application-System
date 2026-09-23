@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime
 
@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.application import Application
 from app.models.application_event import ApplicationEvent
+from app.utils.time import utc_now
 from app.services.application_notification_service import (
     create_notification_for_event,
 )
@@ -51,7 +52,7 @@ def record_application_event(
         old_status=old_status,
         new_status=new_status,
         source=_normalize_source(source),
-        occurred_at=occurred_at or datetime.utcnow(),
+        occurred_at=occurred_at or utc_now(),
         event_metadata=metadata,
     )
 

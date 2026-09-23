@@ -1,4 +1,4 @@
-from app.utils.time import utc_now
+﻿from app.utils.time import utc_now
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
@@ -76,7 +76,7 @@ class OAuthConnection(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=utc_now,
-        onupdate=datetime.utcnow,
+        onupdate=utc_now,
         nullable=False,
     )
 
