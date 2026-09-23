@@ -1,4 +1,4 @@
-from typing import Any
+﻿from typing import Any
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -19,6 +19,7 @@ from app.integrations.job_sources.registry import (
     job_source_registry,
 )
 
+from app.services.provider_capability_service import public_capability_report
 from app.integrations.job_sources.capabilities import (
     capabilities_to_public_dict,
 )
@@ -590,3 +591,16 @@ async def sync_job_source(
             if job.id is not None
         ],
     }
+
+@router.get("/{source_name}/capabilities")
+def get_source_capabilities(source_name: str) -> dict[str, Any]:
+    """Return the provider's declared capabilities and authorization state."""
+    normalized = source_name.strip().lower()
+
+    if not job_source_registry.has(normalized):
+        raise HTTPException(
+            status_code=404,
+            detail=f"Job source '{normalized}' is not registered.",
+        )
+
+    return public_capability_report(normalized)

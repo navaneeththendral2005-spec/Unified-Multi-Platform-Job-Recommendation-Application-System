@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+﻿from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
@@ -73,7 +73,8 @@ def get_my_recommendations(
                     item["missing_skills"]
                 ),
 
-                "reasons": item["reasons"]
+                "reasons": item["reasons"],
+                "score_breakdown": item.get("score_breakdown", {} )
             }
             for item in recommendations
         ]

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import asyncio
 import logging
@@ -189,7 +189,7 @@ class JobSourceSyncService:
 
                 last_status = failure.status
                 last_retryable = failure.retryable
-                last_message = str(exc)
+                last_message = failure.message
 
                 logger.warning(
                     "Provider sync attempt %s/%s failed for '%s': "

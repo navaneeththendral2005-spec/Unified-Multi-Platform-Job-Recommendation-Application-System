@@ -1,4 +1,4 @@
-import os
+﻿import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -18,7 +18,26 @@ if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set. Check backend/.env")
 
 
-engine = create_engine(DATABASE_URL)
+def _pool_options() -> dict:
+    """Build conservative production pool settings from environment."""
+    options = {
+        "pool_pre_ping": True,
+    }
+
+    pool_recycle = os.getenv("DB_POOL_RECYCLE_SECONDS", "1800").strip()
+
+    try:
+        options["pool_recycle"] = max(0, int(pool_recycle))
+    except ValueError:
+        options["pool_recycle"] = 1800
+
+    return options
+
+
+engine = create_engine(
+    DATABASE_URL,
+    **_pool_options(),
+)
 
 
 SessionLocal = sessionmaker(

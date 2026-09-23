@@ -1,6 +1,5 @@
-from datetime import datetime
-
-from sqlalchemy.orm import Session
+﻿from sqlalchemy.orm import Session
+import logging
 
 from app.integrations.auth.provider_configuration import (
     provider_configuration_manager,
@@ -11,6 +10,8 @@ from app.integrations.auth.provider_readiness import (
 from app.integrations.job_sources.registry import job_source_registry
 from app.services.job_source_service import JobSourceService
 from app.utils.time import utc_now
+
+logger = logging.getLogger(__name__)
 
 
 class JobSourceHealthService:
@@ -54,9 +55,7 @@ class JobSourceHealthService:
         # Provider adapter
         # --------------------------------------------------------------
 
-        adapter = job_source_registry.get(
-            normalized_name
-        )
+        adapter = job_source_registry.get(normalized_name)
 
         if adapter is None:
             raise ValueError(
@@ -67,9 +66,7 @@ class JobSourceHealthService:
         # Database source record
         # --------------------------------------------------------------
 
-        source = self.source_service.get_source(
-            normalized_name
-        )
+        source = self.source_service.get_source(normalized_name)
 
         if source is None:
             source = self.source_service.get_or_create_source(
@@ -81,10 +78,8 @@ class JobSourceHealthService:
         # Provider configuration
         # --------------------------------------------------------------
 
-        configuration = (
-            provider_configuration_manager.inspect(
-                normalized_name
-            )
+        configuration = provider_configuration_manager.inspect(
+            normalized_name
         )
 
         configuration_public = (
@@ -101,7 +96,6 @@ class JobSourceHealthService:
             "NOT_CONFIGURED",
             "PARTIALLY_CONFIGURED",
         }:
-
             self.source_service.update_health(
                 normalized_name,
                 health_status="CONFIGURATION_REQUIRED",
@@ -139,7 +133,6 @@ class JobSourceHealthService:
             # ----------------------------------------------------------
 
             if is_healthy:
-
                 source = self.source_service.mark_sync_success(
                     normalized_name,
                     synced_at=utc_now(),
@@ -167,11 +160,8 @@ class JobSourceHealthService:
             # currently confirmed.
             # ----------------------------------------------------------
 
-            source = (
-                self.source_service
-                .mark_authorization_required(
-                    normalized_name
-                )
+            source = self.source_service.mark_authorization_required(
+                normalized_name
             )
 
             readiness = provider_readiness_service.inspect(
@@ -197,12 +187,8 @@ class JobSourceHealthService:
         # --------------------------------------------------------------
 
         except NotImplementedError:
-
-            source = (
-                self.source_service
-                .mark_authorization_required(
-                    normalized_name
-                )
+            source = self.source_service.mark_authorization_required(
+                normalized_name
             )
 
             readiness = provider_readiness_service.inspect(
@@ -226,7 +212,12 @@ class JobSourceHealthService:
         # Unexpected provider error
         # --------------------------------------------------------------
 
-        except Exception as exc:
+        except Exception:
+            # Keep raw provider exception details in server logs only.
+            logger.exception(
+                "Job-source health check failed for provider '%s'.",
+                normalized_name,
+            )
 
             source = self.source_service.update_health(
                 normalized_name,
@@ -243,7 +234,10 @@ class JobSourceHealthService:
                 "source": source.name,
                 "status": "UNAVAILABLE",
                 "healthy": False,
-                "error": str(exc),
+                "error": (
+                    "Provider health check failed. "
+                    "Check server logs for details."
+                ),
                 "configuration": configuration_public,
                 "readiness": (
                     provider_readiness_service.to_public_dict(
@@ -269,13 +263,15 @@ class JobSourceHealthService:
         results: list[dict] = []
 
         for source_name in job_source_registry.list_sources():
-
             try:
-                result = await self.check_source(
-                    source_name
-                )
+                result = await self.check_source(source_name)
 
-            except Exception as exc:
+            except Exception:
+                # Keep raw provider exception details in server logs only.
+                logger.exception(
+                    "Job-source health check failed for provider '%s'.",
+                    source_name,
+                )
 
                 # ------------------------------------------------------
                 # Last-resort provider isolation.
@@ -285,22 +281,16 @@ class JobSourceHealthService:
                     "source": source_name,
                     "status": "UNAVAILABLE",
                     "healthy": False,
-                    "error": str(exc),
+                    "error": (
+                        "Provider health check failed. "
+                        "Check server logs for details."
+                    ),
                     "readiness": {
                         "provider": source_name,
                         "configuration": "UNKNOWN",
-                        "authentication": (
-                            "NOT_AUTHORIZED"
-                        ),
+                        "authentication": "NOT_AUTHORIZED",
                         "readiness": "UNAVAILABLE",
                         "configured": False,
-                        "authorized": False,
-                        "ready": False,
-                        "auth_type": None,
-                        "message": (
-                            "Provider health check failed "
-                            "unexpectedly."
-                        ),
                     },
                 }
 

@@ -36,7 +36,7 @@ def _build_notification_content(
 
     if event.event_type == "application_created":
         return (
-            f"Application submitted — {job_label}",
+            f"Application submitted â€” {job_label}",
             f"Your application for {job_label} has been recorded successfully.",
         )
 
@@ -44,13 +44,13 @@ def _build_notification_content(
         old_label = event.old_status or "unknown"
         new_label = event.new_status or "unknown"
         return (
-            f"Application status updated — {job_label}",
+            f"Application status updated â€” {job_label}",
             f"Your application for {job_label} moved from "
             f"{old_label} to {new_label}.",
         )
 
     return (
-        f"Application update — {job_label}",
+        f"Application update â€” {job_label}",
         f"There is a new update for your {job_label}.",
     )
 
@@ -58,7 +58,7 @@ def _build_notification_content(
 def create_notification_for_event(
     db: Session,
     event: ApplicationEvent,
-) -> ApplicationNotification:
+) -> ApplicationNotification | None:
     """Create the default email notification for one application event.
 
     The caller owns the transaction. A unique event/channel constraint makes
@@ -80,6 +80,19 @@ def create_notification_for_event(
     if not user:
         raise LookupError("Notification recipient not found")
 
+    from app.models.user_preference import UserPreference
+
+    preferences = (
+        db.query(UserPreference)
+        .filter(UserPreference.user_id == event.user_id)
+        .first()
+    )
+
+    if (
+        preferences is not None
+        and not getattr(preferences, "email_application_updates", True)
+    ):
+        return None
     application = (
         db.query(Application)
         .filter(Application.id == event.application_id)

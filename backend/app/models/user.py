@@ -46,7 +46,7 @@ class User(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=utc_now,
-        onupdate=datetime.utcnow
+        onupdate=utc_now
     )
 
     # ========================================================
