@@ -433,6 +433,86 @@ def clean_text_line(line: str) -> str:
     return line
 
 
+# ============================================================
+# CANDIDATE NAME
+# ============================================================
+
+COMMON_NAME_EXCLUSIONS = {
+    "resume",
+    "curriculum vitae",
+    "cv",
+    "profile",
+    "summary",
+    "objective",
+    "contact",
+    "contact information",
+    "personal information",
+}
+
+
+def extract_candidate_name(text: str | None) -> str | None:
+    """Extract a likely candidate name from the top of a resume.
+
+    Resume names are normally placed before contact information and the
+    first section heading. The heuristic is intentionally conservative so
+    a role, email address, phone number, or section heading is not mistaken
+    for a person's name.
+    """
+
+    if not text:
+        return None
+
+    name_pattern = re.compile(
+        r"^[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){1,4}$"
+    )
+
+    role_words = {
+        word
+        for role in ROLE_KEYWORDS
+        for word in re.findall(r"[a-z]+", role.lower())
+    }
+
+    for raw_line in text.splitlines()[:20]:
+        line = clean_text_line(raw_line)
+        if not line:
+            continue
+
+        lowered = line.lower().strip(" :-")
+
+        if lowered in COMMON_NAME_EXCLUSIONS:
+            continue
+
+        if (
+            "@" in line
+            or "http://" in lowered
+            or "https://" in lowered
+            or "www." in lowered
+            or any(char.isdigit() for char in line)
+            or any(separator in line for separator in ("|", ":"))
+        ):
+            continue
+
+        if not name_pattern.fullmatch(line):
+            continue
+
+        words = [word.strip(".'-") for word in line.split()]
+        lowered_words = {word.lower() for word in words}
+
+        if lowered_words & role_words:
+            continue
+
+        if len(words) < 2 or len(words) > 5:
+            continue
+
+        return " ".join(
+            word if len(word) == 2 and word.endswith(".")
+            else word[:1].upper() + word[1:].lower()
+            for word in words
+        )
+
+    return None
+
+
 def clean_bullet_prefix(line: str) -> str:
     return re.sub(
         PROJECT_BULLET_PATTERN,
@@ -2501,6 +2581,12 @@ def analyze_resume(
 ) -> dict:
 
     # --------------------------------------------------------
+    # CANDIDATE NAME
+    # --------------------------------------------------------
+
+    candidate_name = extract_candidate_name(text)
+
+    # --------------------------------------------------------
     # GLOBAL SKILLS
     # --------------------------------------------------------
 
@@ -2609,6 +2695,7 @@ def analyze_resume(
     # --------------------------------------------------------
 
     return {
+        "name": candidate_name,
         "skills": skills,
         "education": education,
         "experience": structured_experience,
