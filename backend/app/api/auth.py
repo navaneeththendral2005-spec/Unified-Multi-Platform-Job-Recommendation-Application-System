@@ -32,6 +32,7 @@ from app.integrations.auth.provider_readiness import (
 )
 
 from app.models.oauth_connection import OAuthConnection
+from app.models.user import User
 
 
 router = APIRouter(
@@ -120,13 +121,26 @@ def login_user(
 
 @router.get("/me")
 def get_current_user(
+    db: Session = Depends(get_db),
     user_id: int = Depends(verify_access_token),
 ):
+    user = (
+        db.query(User)
+        .filter(User.id == user_id)
+        .first()
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
     return {
-        "message": "You are authenticated!",
-        "user": {
-            "id": user_id,
-        },
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "is_active": user.is_active,
     }
 
 

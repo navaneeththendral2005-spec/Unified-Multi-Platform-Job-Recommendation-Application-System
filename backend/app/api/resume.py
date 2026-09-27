@@ -18,6 +18,8 @@ from sqlalchemy.orm import Session
 from app.database.connection import get_db
 
 from app.models.resume import Resume
+from app.models.user import User
+from app.models.user_profile import UserProfile
 from app.models.resume_analysis import ResumeAnalysis
 
 from app.services.security import verify_access_token
@@ -382,6 +384,136 @@ def save_upload(
 
 
 # ============================================================
+# PROFILE SYNCHRONIZATION
+# ============================================================
+
+def sync_resume_data_to_profile(
+    db: Session,
+    user_id: int,
+    analysis_result: dict,
+) -> UserProfile:
+    """
+    Create or update the user's profile from the latest
+    resume analysis.
+
+    A newly registered user may not have a UserProfile row yet.
+    The resume upload therefore creates the row before the
+    frontend calls /profile/me.
+    """
+
+    profile = (
+        db.query(UserProfile)
+        .filter(
+            UserProfile.user_id == user_id
+        )
+        .first()
+    )
+
+    if profile is None:
+        profile = UserProfile(
+            user_id=user_id,
+        )
+        db.add(profile)
+        db.flush()
+
+    # Skills are synchronized from the active resume's
+    # UserSkill records.
+    sync_skills_to_profile(
+        db=db,
+        user_id=user_id,
+    )
+
+    education = analysis_result.get("education") or []
+
+    if education:
+        profile.education = " | ".join(
+            str(item).strip()
+            for item in education
+            if str(item).strip()
+        )[:255]
+
+    suggested_roles = (
+        analysis_result.get("suggested_roles")
+        or []
+    )
+
+    if suggested_roles:
+        profile.preferred_job_role = str(
+            suggested_roles[0]
+        )[:255]
+
+    experience_entries = (
+        analysis_result.get("experience") or []
+    )
+
+    total_months = 0
+
+    for entry in experience_entries:
+        if not isinstance(entry, dict):
+            continue
+
+        duration = entry.get("duration")
+
+        if not isinstance(duration, dict):
+            continue
+
+        months = duration.get("months")
+
+        if isinstance(months, (int, float)):
+            total_months += max(
+                0,
+                int(months),
+            )
+
+    if total_months > 0:
+        profile.experience_years = (
+            total_months // 12
+        )
+
+    db.flush()
+
+    return profile
+
+
+# ============================================================
+# GET ACTIVE RESUME
+# ============================================================
+
+@router.get("/me")
+def get_my_resume(
+    db: Session = Depends(get_db),
+    current_user_id: int = Depends(verify_access_token),
+):
+    """
+    Return the current user's active resume metadata.
+
+    The frontend uses this endpoint to restore the uploaded resume
+    filename when the Resume & Profile page is opened or refreshed.
+    The actual stored file path is intentionally not exposed.
+    """
+
+    resume = (
+        db.query(Resume)
+        .filter(
+            Resume.user_id == current_user_id,
+            Resume.is_active.is_(True),
+        )
+        .order_by(Resume.uploaded_at.desc())
+        .first()
+    )
+
+    if resume is None:
+        return None
+
+    return {
+        "resume_id": resume.id,
+        "file_name": resume.file_name,
+        "uploaded_at": resume.uploaded_at,
+        "is_active": resume.is_active,
+    }
+
+
+# ============================================================
 # UPLOAD RESUME
 # ============================================================
 
@@ -593,6 +725,23 @@ def upload_resume(
         )
 
         # ====================================================
+        # SYNC CANDIDATE NAME TO THE AUTHENTICATED USER
+        # ====================================================
+
+        candidate_name = analysis_result.get("name")
+
+        if candidate_name:
+            user = (
+                db.query(User)
+                .filter(User.id == current_user_id)
+                .first()
+            )
+
+            if user:
+                user.name = candidate_name
+                db.flush()
+
+        # ====================================================
         # CREATE NEW RESUME AS INACTIVE
         #
         # This is IMPORTANT because the database allows only
@@ -601,7 +750,9 @@ def upload_resume(
 
         resume = Resume(
             user_id=current_user_id,
-            file_name=file_name,
+            # Keep the original user-facing filename in the database.
+            # The generated server filename remains private in file_path.
+            file_name=original_filename.name,
             file_path=str(file_path),
             extracted_text=extracted_text,
             is_active=False,
@@ -662,12 +813,13 @@ def upload_resume(
         )
 
         # ====================================================
-        # SYNCHRONIZE ACTIVE RESUME SKILLS TO PROFILE
+        # CREATE / UPDATE PROFILE FROM RESUME ANALYSIS
         # ====================================================
 
-        sync_skills_to_profile(
+        sync_resume_data_to_profile(
             db=db,
             user_id=current_user_id,
+            analysis_result=analysis_result,
         )
 
         # ====================================================
@@ -726,6 +878,11 @@ def upload_resume(
         # SUCCESS RESPONSE
         # ====================================================
 
+        suggested_roles = (
+            analysis_result.get("suggested_roles")
+            or []
+        )
+
         return {
             "message": (
                 "Resume uploaded and analyzed successfully"
@@ -734,6 +891,7 @@ def upload_resume(
             "resume_id": resume.id,
 
             "file_name": resume.file_name,
+            "original_file_name": original_filename.name,
 
             "is_active": resume.is_active,
 
@@ -741,7 +899,26 @@ def upload_resume(
                 extracted_text
             ),
 
+            "profile": {
+                "professional_title": (
+                    suggested_roles[0]
+                    if suggested_roles
+                    else None
+                ),
+                "education": analysis_result.get(
+                    "education"
+                ),
+                "experience": analysis_result.get(
+                    "experience"
+                ),
+                "skills": analysis_result.get(
+                    "skills"
+                ),
+            },
+
             "analysis": {
+                "name": analysis_result.get("name"),
+
                 "skills": (
                     analysis_result["skills"]
                 ),

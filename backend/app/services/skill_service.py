@@ -213,9 +213,14 @@ def get_or_create_skill(
 
     1. Validate skill name
     2. Normalize skill name
-    3. Search canonical skills
-    4. Search registered aliases
-    5. Create a new canonical skill if necessary
+    3. Search by exact canonical display name
+    4. Search canonical normalized name
+    5. Search registered aliases
+    6. Create a new canonical skill if necessary
+
+    The exact-name lookup is intentionally performed first so that
+    existing skills created with an older normalization rule remain
+    compatible with the current normalization logic.
     """
 
     cleaned_name = validate_skill_name(
@@ -227,19 +232,25 @@ def get_or_create_skill(
     )
 
     # --------------------------------------------------------
-    # CHECK EXISTING CANONICAL SKILL OR ALIAS
+    # CHECK EXACT CANONICAL DISPLAY NAME
     # --------------------------------------------------------
+    # This protects existing records such as "Scikit-Learn"
+    # when their stored normalized_name was created using an
+    # older normalization rule.
 
-    existing_skill = find_skill_by_name_or_alias(
-        db,
-        cleaned_name
+    existing_skill = (
+        db.query(Skill)
+        .filter(
+            Skill.name == cleaned_name
+        )
+        .first()
     )
 
     if existing_skill:
         return existing_skill
 
     # --------------------------------------------------------
-    # SAFETY CHECK
+    # CHECK EXISTING CANONICAL NORMALIZED NAME
     # --------------------------------------------------------
 
     existing_skill = (
@@ -248,6 +259,18 @@ def get_or_create_skill(
             Skill.normalized_name == normalized_name
         )
         .first()
+    )
+
+    if existing_skill:
+        return existing_skill
+
+    # --------------------------------------------------------
+    # CHECK REGISTERED ALIASES
+    # --------------------------------------------------------
+
+    existing_skill = find_skill_by_alias(
+        db,
+        cleaned_name
     )
 
     if existing_skill:
