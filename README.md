@@ -1,60 +1,50 @@
-# 🚀 Unified Multi-Platform Job Recommendation Application System
+[README.md](https://github.com/user-attachments/files/32725628/README.md)
+# Unified Multi-Platform Job Recommendation Application System
 
-> **One platform for discovering, understanding, applying to, and tracking job & internship opportunities.**
-
-Finding the right opportunity often means searching across multiple platforms, comparing listings, understanding requirements, applying separately, and then keeping track of every application.
-
-This project aims to bring that entire journey into **one intelligent system**.
-
-Instead of making users search through platforms individually, the system brings opportunities from multiple authorized sources into a unified experience — while using AI to understand the candidate and identify opportunities that fit their profile.
+> An intelligent career platform that understands the candidate first, connects that understanding with opportunities across multiple job sources, and helps users discover, evaluate, apply to, and track relevant opportunities.
 
 ---
 
-## 💡 The Idea
+## 📌 About the Project
 
-The system starts with **the candidate**, not the job listing.
+The **Unified Multi-Platform Job Recommendation Application System** is a full-stack intelligent career platform designed to go beyond the traditional job-board experience.
 
-A user uploads their resume, and the system analyzes their:
+Instead of simply displaying job listings, the system first understands the candidate through their **resume, skills, education, projects, experience, and career preferences**. It then uses this information to connect the candidate with relevant opportunities from multiple job sources through a unified architecture.
 
-- Skills
-- Projects
-- Experience
-- Education
-- Career profile
-
-The system then uses this understanding to discover and recommend relevant opportunities across connected job platforms.
-
-Users can explore the opportunity, understand the company and job requirements, see **where the listing came from**, and proceed with the application.
-
-From there, the system continues working by keeping track of the application and notifying the user about important status changes.
-
-### In simple terms
-
-```text
-Your Profile
-     ↓
-AI understands you
-     ↓
-Discover opportunities
-     ↓
-Find relevant matches
-     ↓
-Understand the job & company
-     ↓
-Apply
-     ↓
-Track applications
-     ↓
-Stay informed
-```
+The platform brings together **candidate intelligence, personalized job recommendations, application tracking, and notifications** into a single experience.
 
 ---
 
-## 🌐 One Place. Multiple Job Platforms.
+## 💡 Core Ideology
 
-The platform is designed to bring opportunities from multiple sources into a single experience.
+The core idea behind this project is to build a **unified intelligent career layer rather than another conventional job board**.
 
-Currently designed for integrations with:
+The system understands the candidate first and then connects that understanding with the job market. Opportunities from different sources can be normalized, their original source can be preserved, and duplicate listings can be reduced so that users receive a consistent experience.
+
+Most importantly, the system is designed to **support the user's decision rather than make the decision for them**. Users can explore job and company information, consider their preferences and requirements, understand why an opportunity may be relevant, and then make their own informed decision about whether to apply.
+
+---
+
+## ✨ Key Features
+
+### 🤖 AI-Powered Resume & Candidate Intelligence
+- Resume upload and analysis
+- Candidate profile intelligence
+- Skill extraction and normalization
+- Experience, education, and project understanding
+- Career preference support
+
+### 🎯 Personalized Job Recommendations
+- Candidate-job matching
+- Skill-based relevance
+- Preference-aware recommendations
+- Multi-factor recommendation logic
+- Relevant opportunity information for decision-making
+
+### 🌐 Multi-Platform Job Discovery
+The system is architected to connect with multiple authorized job sources through independent provider adapters.
+
+Supported provider architecture includes:
 
 - LinkedIn
 - Naukri
@@ -62,184 +52,482 @@ Currently designed for integrations with:
 - Indeed
 - Wellfound
 
-Each opportunity retains its **original source and application path**, allowing users to understand where it came from rather than hiding the underlying platform.
+> Availability of individual provider capabilities depends on their official APIs, authorization, partner access, and integration requirements.
 
-> Platform capabilities depend on official API, partner, authorization, and integration availability.
+### 📝 Application Tracking
+- Centralized application records
+- Application status management
+- Application lifecycle tracking
+- Application event history
 
----
+### 🔔 Notifications
+- Application-related notifications
+- Notification preferences
+- Email delivery infrastructure
+- Delivery retry support
 
-## 🧠 AI-Powered Job Discovery
-
-The system doesn't simply collect job listings.
-
-It first understands the candidate and then uses that information to identify relevant opportunities.
-
-Users can also specify preferences such as **preferred locations**, allowing the recommendation system to prioritize opportunities according to their career preferences.
-
----
-
-## 🔎 Explore Before You Apply
-
-Every recommended opportunity is intended to give the user the information needed to make their own decision.
-
-Users can explore:
-
-- Job description
-- Required skills
-- Experience requirements
-- Location
-- Company information
-- Application source
-- Application link
-
-The goal is to make the decision process **clear and informed**, rather than simply pushing users toward applications.
+### 🔐 Authentication & Security
+- User registration and login
+- JWT-based authentication
+- Protected APIs
+- Secure environment-based configuration
+- OAuth integration architecture
 
 ---
 
-## 📝 Apply & Track
-
-Once a user decides to apply, the system supports the appropriate application flow available for that opportunity.
-
-Applications are then brought into a centralized tracking system so users don't have to remember where they applied or manually maintain separate records.
+## 🔄 How It Works
 
 ```text
-Discover → Review → Apply → Track
-```
-
----
-
-## 🔔 Stay Updated
-
-Application progress can generate notifications so users stay informed about changes without repeatedly checking different platforms.
-
----
-
-## 🏗️ System Architecture
-
-```text
-                  Candidate
-                      │
-                      ▼
-               Resume Intelligence
-                      │
-                      ▼
-              Candidate Profile
-                      │
-                      ▼
-             User Preferences
-                      │
-                      ▼
-          Multi-Platform Discovery
-                      │
-                      ▼
-          Job Intelligence & Matching
-                      │
-                      ▼
+              Candidate
+                  │
+                  ▼
+        Resume & Profile Intelligence
+                  │
+                  ▼
+          Skills & Preferences
+                  │
+                  ▼
+        ┌───────────────────────┐
+        │ Recommendation Engine │
+        └───────────┬───────────┘
+                    │
+                    ▼
+        Multi-Platform Job Sources
+                    │
+                    ▼
+          Normalized Opportunities
+                    │
+                    ▼
+       Personalized Recommendations
+                    │
+                    ▼
              User Decision
-                      │
-                      ▼
-             Application Flow
-                      │
-                      ▼
-            Application Tracking
-                      │
-                      ▼
-               Notifications
+                    │
+                    ▼
+             Apply & Track
+                    │
+                    ▼
+             Notifications
 ```
 
 ---
 
-## 🔐 Integration Approach
+## 🏗️ High-Level Architecture
 
-The system is built around **authorized and transparent integrations**.
+```text
+┌──────────────────────┐
+│   React / Vite UI    │
+└──────────┬───────────┘
+           │
+           │ REST API
+           ▼
+┌──────────────────────┐
+│    FastAPI Backend   │
+├──────────────────────┤
+│ Authentication       │
+│ Resume Intelligence  │
+│ Recommendations      │
+│ Job Intelligence     │
+│ Applications         │
+│ Notifications        │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│      PostgreSQL      │
+└──────────────────────┘
 
-It is designed to use official APIs, OAuth, partner integrations, feeds, ATS integrations, and legitimate external application flows where available.
+           +
 
-It does **not** depend on:
-
-- Unauthorized scraping
-- Fake applications
-- CAPTCHA bypassing
-- Credential sharing
-- Private undocumented APIs
-
-When a platform does not provide the required capability, the system is designed to make that limitation clear rather than pretending the action succeeded.
-
----
-
-## ⚙️ Technology
-
-- **Backend:** FastAPI
-- **Database:** PostgreSQL
-- **ORM:** SQLAlchemy
-- **Authentication:** JWT + OAuth 2.0
-- **AI:** Resume Intelligence & Recommendation Engine
-- **Background Processing:** Async Workers
-- **API:** REST + OpenAPI
-
----
-
-## 📌 Current Status
-
-### Built
-
-- Resume Intelligence
-- Personalized Recommendation Engine
-- Multi-Platform Integration Architecture
-- Provider Authentication Framework
-- Job Normalization & Deduplication
-- Job Synchronization
-- Provider Capability Management
-- Retry & Failure Handling
-- Background Sync Worker
-- Application Tracking
-- Application Lifecycle Management
-- Email & Notification Engine
-- Provider Health & Readiness
-- API Documentation
-- Automated Test Suite
-
-### Platform Activation
-
-The integration architecture is ready for provider-specific activation.
-
-Actual job discovery and application capabilities depend on obtaining the required official API, partner, or authorization access from each platform.
+┌──────────────────────────────┐
+│ Authorized Job-Source Layer  │
+├──────────────────────────────┤
+│ LinkedIn │ Naukri │ Indeed   │
+│ Internshala │ Wellfound      │
+└──────────────────────────────┘
+```
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Technology Stack
 
 ### Backend
+- **Python**
+- **FastAPI**
+- **SQLAlchemy**
+- **PostgreSQL**
+- **Alembic**
+- **Pydantic**
+- **Uvicorn**
+- **Pytest**
+
+### Frontend
+- **React**
+- **Vite**
+- **JavaScript / JSX**
+- **CSS**
+- **Lucide React**
+- **Motion**
+
+---
+
+## 📁 Project Structure
+
+```text
+Unified-Multi-Platform-Job-Recommendation-Application-System/
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── database/
+│   │   ├── integrations/
+│   │   ├── models/
+│   │   ├── recommendation/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── workers/
+│   │   └── main.py
+│   │
+│   ├── alembic/
+│   ├── scripts/
+│   ├── tests/
+│   ├── .env.example
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── lib/
+│   │   ├── pages/
+│   │   └── App.jsx
+│   ├── .env.example
+│   ├── package.json
+│   └── vite.config.js
+│
+├── .gitignore
+└── README.md
+```
+
+---
+
+# 🚀 Getting Started
+
+## Prerequisites
+
+Make sure the following are installed:
+
+- Python 3.10+
+- Node.js and npm
+- PostgreSQL
+- Git
+
+---
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/navaneeththendral2005-spec/Unified-Multi-Platform-Job-Recommendation-Application-System.git
+cd Unified-Multi-Platform-Job-Recommendation-Application-System
+```
+
+---
+
+# ⚙️ Backend Setup
+
+Open a terminal in the project directory:
 
 ```bash
 cd backend
+```
+
+### Create a virtual environment
+
+**Windows PowerShell**
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+**macOS / Linux**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+For development/testing:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+---
+
+## 🗄️ Database Setup
+
+Create a PostgreSQL database, for example:
+
+```sql
+CREATE DATABASE job_recommendation_db;
+```
+
+Create the backend environment file from the provided example:
+
+**Windows PowerShell**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**macOS / Linux**
+
+```bash
+cp .env.example .env
+```
+
+Configure the required values in `backend/.env`, including the database connection and application secrets.
+
+Example:
+
+```env
+DATABASE_URL=postgresql+psycopg2://USERNAME:PASSWORD@localhost:5432/job_recommendation_db
+SECRET_KEY=your-secret-key
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+### Run database migrations
+
+From the `backend` directory:
+
+```bash
+alembic upgrade head
+```
+
+---
+
+## ▶️ Start the Backend
+
+From `backend/`:
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-Once running, the API documentation is available through the FastAPI OpenAPI interface.
+Backend:
+
+```text
+http://localhost:8000
+```
+
+Health check:
+
+```text
+http://localhost:8000/health
+```
+
+Interactive API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+Alternative API documentation:
+
+```text
+http://localhost:8000/redoc
+```
 
 ---
 
-## 🗺️ What's Next
+# 🎨 Frontend Setup
 
-The project is moving toward a complete unified career experience, including:
+Open a **new terminal**:
 
-- Activation of approved platform integrations
-- Unified job discovery experience
-- Recommendation dashboard
-- Application dashboard
-- Provider connection management
-- User preference management
-- Notification center
+```bash
+cd frontend
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the frontend environment file:
+
+**Windows PowerShell**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+**macOS / Linux**
+
+```bash
+cp .env.example .env
+```
+
+Configure:
+
+```env
+VITE_API_URL=http://localhost:8000
+```
 
 ---
 
-## 🎯 Vision
+## ▶️ Start the Frontend
 
-This project is being built around a simple idea:
+```bash
+npm run dev
+```
 
-> **Understand the candidate. Understand the opportunities. Bring them together. Help the user make an informed decision. Then manage everything that happens afterward.**
+The frontend will normally be available at:
 
-The goal is not to create another job board.
+```text
+http://localhost:5173
+```
 
-The goal is to build a **unified intelligent career layer** that connects the candidate, the job market, the application process, and everything that follows — in one place.
+---
+
+# 🖥️ Accessing the Application
+
+Once both services are running:
+
+| Component | Address |
+|---|---|
+| Frontend | `http://localhost:5173` |
+| Backend | `http://localhost:8000` |
+| API Documentation | `http://localhost:8000/docs` |
+| Alternative API Docs | `http://localhost:8000/redoc` |
+| Backend Health | `http://localhost:8000/health` |
+
+The frontend communicates with the FastAPI backend, while the backend communicates with PostgreSQL and the configured external integrations.
+
+---
+
+# 🔗 Multi-Platform Integration
+
+The project uses a provider-based architecture rather than tightly coupling the recommendation engine to a single job platform.
+
+```text
+Job Source
+    ↓
+Provider Adapter
+    ↓
+Normalized Job
+    ↓
+Unified Job Model
+    ↓
+Recommendation Engine
+    ↓
+User
+```
+
+This allows different job sources to be connected while maintaining a consistent experience inside the application.
+
+The architecture is intended for **authorized and legitimate integrations**. Individual provider capabilities may require official API access, partner approval, credentials, or other authorization from the respective platform.
+
+---
+
+# 🔒 Environment & Security
+
+Do **not** commit sensitive configuration to GitHub.
+
+Keep the following private:
+
+- `.env` files
+- Database credentials
+- API keys
+- OAuth client secrets
+- Authentication secrets
+- Email credentials
+- Access/refresh tokens
+- Private user data
+- Uploaded resumes
+
+Use the provided `.env.example` files as configuration templates.
+
+---
+
+# 🧪 Testing
+
+Backend tests are located in:
+
+```text
+backend/tests/
+```
+
+Run them from the backend directory:
+
+```bash
+pytest
+```
+
+---
+
+# 📦 Production Build
+
+Build the frontend with:
+
+```bash
+cd frontend
+npm run build
+```
+
+Preview the production frontend build locally:
+
+```bash
+npm run preview
+```
+
+For production deployment, configure the required environment variables, database, API credentials, frontend origin, email infrastructure, and authorized external integrations according to the deployment environment.
+
+---
+
+# 🔮 Future Scope
+
+The architecture provides a foundation for further development, including:
+
+- Expanding authorized job-platform integrations
+- Improving recommendation personalization
+- Enhancing application workflows
+- Expanding cross-platform application tracking
+- Improving notification capabilities
+- Adding more career intelligence features
+- Increasing recommendation explainability and contextual information
+
+---
+
+# 🤝 Contributing
+
+Contributions and improvements are welcome.
+
+```bash
+git checkout -b feature/your-feature
+```
+
+Make your changes, test them, and submit a pull request.
+
+---
+
+# 📄 License
+
+No license has currently been specified for this repository.
+
+If the project is intended to be distributed as open-source software, an appropriate `LICENSE` file should be added.
+
+---
+
+## 🌟 Project Vision
+
+> **Understand the candidate. Connect the opportunity. Keep the decision with the user.**
+
+The goal is to create a unified career experience where users do not have to depend on a single job platform to discover opportunities. Instead, the system brings candidate intelligence and multiple authorized job sources together into one intelligent, consistent, and user-centered application.
