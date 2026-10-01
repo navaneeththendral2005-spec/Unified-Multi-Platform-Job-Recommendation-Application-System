@@ -109,44 +109,6 @@ Supported provider architecture includes:
                     ▼
              Notifications
 ```
-
----
-
-## 🏗️ High-Level Architecture
-
-```text
-┌──────────────────────┐
-│   React / Vite UI    │
-└──────────┬───────────┘
-           │
-           │ REST API
-           ▼
-┌──────────────────────┐
-│    FastAPI Backend   │
-├──────────────────────┤
-│ Authentication       │
-│ Resume Intelligence  │
-│ Recommendations      │
-│ Job Intelligence     │
-│ Applications         │
-│ Notifications        │
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│      PostgreSQL      │
-└──────────────────────┘
-
-           +
-
-┌──────────────────────────────┐
-│ Authorized Job-Source Layer  │
-├──────────────────────────────┤
-│ LinkedIn │ Naukri │ Indeed   │
-│ Internshala │ Wellfound      │
-└──────────────────────────────┘
-```
-
 ---
 
 ## 🛠️ Technology Stack
@@ -489,40 +451,6 @@ npm run preview
 ```
 
 For production deployment, configure the required environment variables, database, API credentials, frontend origin, email infrastructure, and authorized external integrations according to the deployment environment.
-
----
-
-# 🔮 Future Scope
-
-The architecture provides a foundation for further development, including:
-
-- Expanding authorized job-platform integrations
-- Improving recommendation personalization
-- Enhancing application workflows
-- Expanding cross-platform application tracking
-- Improving notification capabilities
-- Adding more career intelligence features
-- Increasing recommendation explainability and contextual information
-
----
-
-# 🤝 Contributing
-
-Contributions and improvements are welcome.
-
-```bash
-git checkout -b feature/your-feature
-```
-
-Make your changes, test them, and submit a pull request.
-
----
-
-# 📄 License
-
-No license has currently been specified for this repository.
-
-If the project is intended to be distributed as open-source software, an appropriate `LICENSE` file should be added.
 
 ---
 
